@@ -3,70 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting...</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // ✅ URL ของฟอร์มสมัครเรียน (แนบ entry.1027717937)
+    // ✅ ใส่ LIFF ID ของ Channel นี้ (ดูได้ใน LINE Developers → LIFF → App → LIFF ID)
+    const liffId = "YOUR_LIFF_ID";
+
+    // ✅ URL ของ Google Form สมัครเรียน (พร้อม entry.1027717937)
     const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScBMG5Hv4lcdCzgjAYWxJV4VksW43aE8bVEh25R43kb5QcdPQ/viewform?usp=pp_url&entry.1027717937=";
 
-    // ✅ Channel ID และ Secret ของ LINE Login ของคุณ
-    const clientId = "2007408167";
-    const clientSecret = "YOUR_CHANNEL_SECRET";
-
-    // ✅ URL นี้ต้องตรงกับ redirectUri ใน login.html
-    const redirectUri = "https://trongjaitutor.github.io/registersummer2026/callback.html";
-
-    async function getAccessToken(code) {
-      const tokenUrl = "https://api.line.me/oauth2/v2.1/token";
-      const data = {
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: redirectUri,
-        client_id: clientId,
-        client_secret: clientSecret
-      };
-      const params = new URLSearchParams(data);
-      const res = await fetch(tokenUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params
-      });
-      return await res.json();
-    }
-
-    async function getProfile(accessToken) {
-      const res = await fetch("https://api.line.me/v2/profile", {
-        headers: { Authorization: "Bearer " + accessToken }
-      });
-      return await res.json();
-    }
-
     async function main() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
+      try {
+        await liff.init({ liffId });
 
-      if (!code) {
-        document.body.innerHTML = "<h3>ไม่พบโค้ดจาก LINE Login</h3>";
-        return;
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+
+        // ✅ เมื่อได้ userId แล้ว redirect ไป Google Form
+        window.location.href = formUrl + userId;
+
+      } catch (err) {
+        document.body.innerHTML = "<h3>เกิดข้อผิดพลาด: " + err.message + "</h3>";
+        console.error(err);
       }
-
-      const tokenData = await getAccessToken(code);
-      const accessToken = tokenData.access_token;
-
-      if (!accessToken) {
-        document.body.innerHTML = "<h3>ไม่สามารถรับ token จาก LINE ได้</h3>";
-        return;
-      }
-
-      const profile = await getProfile(accessToken);
-      const userId = profile.userId;
-
-      // ✅ Redirect ไปยังฟอร์มสมัครเรียน พร้อมแนบ userId
-      window.location.href = formUrl + userId;
     }
 
     main();
   </script>
 </head>
 <body>
-  <h3>กำลังเข้าสู่ระบบ กรุณารอสักครู่...</h3>
+  <h3>กำลังเข้าสู่ระบบด้วย LINE... กรุณารอสักครู่</h3>
 </body>
 </html>
