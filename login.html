@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เข้าสู่ระบบสมัครเรียน | Trong Jai Tutor</title>
+  <style>
+    body {
+      font-family: "Prompt", sans-serif;
+      text-align: center;
+      margin-top: 120px;
+      background-color: #f5f5f5;
+    }
+    h2 {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 40px;
+    }
+    button {
+      background-color: #06C755;
+      color: white;
+      font-size: 20px;
+      padding: 15px 45px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #05a94f;
+    }
+  </style>
+</head>
+<body>
+  <h2>เข้าสู่ระบบด้วย LINE ก่อนกรอกแบบฟอร์มสมัครเรียน</h2>
+  <button onclick="loginWithLINE()">เข้าสู่ระบบด้วย LINE</button>
+
+  <script>
+    // ✅ Client ID ของ LINE Login
+    const clientId = '2007408167'; 
+
+    // ✅ URL callback ต้องตรงกับใน LINE Developer (ห้ามพิมพ์ผิดแม้แต่ตัวเดียว)
+    const redirectUri = 'https://trongjaitutor.github.io/registersummer2026/callback.html';
+
+    function loginWithLINE() {
+      const state = Math.random().toString(36).substring(7);
+      const scope = 'profile openid';
+
+      // ✅ เพิ่ม response_mode=form_post เพื่อให้ทำงานได้เสถียรใน browser ทั่วไป
+      const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}&response_mode=form_post`;
+      window.location.href = loginUrl;
+    }
+  </script>
+</body>
+</html>
