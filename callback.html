@@ -5,29 +5,32 @@
   <title>Redirecting...</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // ✅ ใส่ LIFF ID ของ Channel นี้ (ดูได้ใน LINE Developers → LIFF → App → LIFF ID)
-    const liffId = "YOUR_LIFF_ID";
+    // ✅ LIFF ID ของ Trong Jai Tutor (สำหรับระบบสมัครเรียน)
+    const liffId = "2007408167-QPNO6qp3";
 
-    // ✅ URL ของ Google Form สมัครเรียน (พร้อม entry.1027717937)
+    // ✅ ลิงก์ Google Form สมัครเรียน (พร้อมช่องรับ userId)
     const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScBMG5Hv4lcdCzgjAYWxJV4VksW43aE8bVEh25R43kb5QcdPQ/viewform?usp=pp_url&entry.1027717937=";
 
     async function main() {
       try {
+        // เริ่มต้น LIFF
         await liff.init({ liffId });
 
+        // ถ้ายังไม่ได้ล็อกอิน → สั่งให้ล็อกอินก่อน
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
 
+        // ดึงข้อมูลโปรไฟล์ผู้ใช้
         const profile = await liff.getProfile();
         const userId = profile.userId;
 
-        // ✅ เมื่อได้ userId แล้ว redirect ไป Google Form
+        // ✅ เมื่อได้ userId แล้ว → ส่งไปยัง Google Form
         window.location.href = formUrl + userId;
 
       } catch (err) {
-        document.body.innerHTML = "<h3>เกิดข้อผิดพลาด: " + err.message + "</h3>";
+        document.body.innerHTML = "<h3>❌ เกิดข้อผิดพลาด: " + err.message + "</h3>";
         console.error(err);
       }
     }
